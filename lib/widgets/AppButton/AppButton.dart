@@ -18,7 +18,7 @@ class AppBtn extends StatelessWidget {
     this.bgColor,
     this.btnWidth = 130,
     this.radius = 100,
-    this.btnHeight = 40,
+    this.btnHeight = 50,
     this.whiteBordered = false,
     @required this.child,
     @required this.onPressed,

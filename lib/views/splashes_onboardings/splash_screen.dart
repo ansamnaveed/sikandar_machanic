@@ -1,29 +1,35 @@
-import 'dart:async';
+// ignore_for_file: import_of_legacy_library_into_null_safe
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mechanic/views/auth/login.dart';
+import 'package:mechanic/controllers/splash_controller.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    Timer(Duration(seconds: 3), () {
-      Get.offAll(
-        Login(),
-      );
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: GetBuilder<SplashScreenViewModel>(
+        init: SplashScreenViewModel(),
+        builder: (controller) {
+          return Stack(
+            fit: StackFit.expand,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Image.asset(
+                    'assets/images/logo.png',
+                    width: controller.animation.value * 200,
+                    height: controller.animation.value * 200,
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 }
