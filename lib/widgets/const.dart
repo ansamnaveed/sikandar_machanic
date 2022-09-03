@@ -5,19 +5,18 @@ import 'package:flutter/material.dart';
 String fcmToken = "";
 
 Map<int, Color> appThemeMap = {
-  50: Color.fromRGBO(17, 82, 253, .1),
-  100: Color.fromRGBO(17, 82, 253, .2),
-  200: Color.fromRGBO(17, 82, 253, .3),
-  300: Color.fromRGBO(17, 82, 253, .4),
-  400: Color.fromRGBO(17, 82, 253, .5),
-  500: Color.fromRGBO(17, 82, 253, .6),
-  600: Color.fromRGBO(17, 82, 253, .7),
-  700: Color.fromRGBO(17, 82, 253, .8),
-  800: Color.fromRGBO(17, 82, 253, .9),
-  900: Color.fromRGBO(17, 82, 253, 1),
+  50: Color.fromRGBO(42, 125, 225, .1),
+  100: Color.fromRGBO(42, 125, 225, .2),
+  200: Color.fromRGBO(42, 125, 225, .3),
+  300: Color.fromRGBO(42, 125, 225, .4),
+  400: Color.fromRGBO(42, 125, 225, .5),
+  500: Color.fromRGBO(42, 125, 225, .6),
+  600: Color.fromRGBO(42, 125, 225, .7),
+  700: Color.fromRGBO(42, 125, 225, .8),
+  800: Color.fromRGBO(42, 125, 225, .9),
+  900: Color.fromRGBO(42, 125, 225, 1),
 };
-
-MaterialColor appThemeColor = MaterialColor(0xFF1152FD, appThemeMap);
+MaterialColor appThemeColor = MaterialColor(0xFF2A7DE1, appThemeMap);
 
 const Color appColorDark = Color.fromRGBO(81, 80, 70, 1);
 
