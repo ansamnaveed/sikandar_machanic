@@ -1,9 +1,12 @@
+// ignore_for_file: import_of_legacy_library_into_null_safe
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mechanic/widgets/AppButton/AppButton.dart';
 import 'package:mechanic/widgets/AppDialog/app_dialog.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
-import 'package:mechanic/widgets/const.dart';
 
 class ProfileScreen extends StatefulWidget {
   ScrollController scrollcontroller = ScrollController();
@@ -14,6 +17,29 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String? fullname;
+  String? fileUrl;
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  void getData() async {
+    final User? user = auth.currentUser;
+    DocumentSnapshot variable = await FirebaseFirestore.instance
+        .collection("Mechanics")
+        .doc(user!.email)
+        .get();
+    setState(() {
+      fullname = variable['firstname'];
+      fileUrl = variable['imageUrl'];
+    });
+  }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             Txt(
-              text: 'Name',
+              text: '$fullname',
               size: 30,
               bold: true,
             ),
@@ -81,6 +107,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () {
                 Get.dialog(
                   AppDialog(
+                    onTapOk: () {
+                      final _auth = FirebaseAuth.instance;
+                      _auth.signOut();
+                    },
                     title: 'Logout?',
                     subtitle: 'Are you sure to logout the app.',
                   ),

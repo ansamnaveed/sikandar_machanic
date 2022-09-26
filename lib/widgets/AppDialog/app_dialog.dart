@@ -64,11 +64,9 @@ class AppDialog extends StatelessWidget {
                             ),
                           ),
                         ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                        onPressed: onTapOk,
                         child: Text(
-                          'No',
+                          'Yes',
                           style: TextStyle(
                               fontFamily: 'Janna', fontWeight: FontWeight.bold),
                         ),
@@ -84,9 +82,11 @@ class AppDialog extends StatelessWidget {
                       ),
                     ),
                   ),
-                  onPressed: onTapOk,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   child: Text(
-                    'Yes',
+                    'No',
                     style: TextStyle(
                         fontFamily: 'Janna', fontWeight: FontWeight.bold),
                   ),
