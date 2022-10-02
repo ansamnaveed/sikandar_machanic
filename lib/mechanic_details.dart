@@ -48,7 +48,7 @@ class _MechanicDetailsState extends State<MechanicDetails> {
   loc.Location _location = loc.Location();
   @override
   void initState() {
-    _location.onLocationChanged.listen((l) {
+    _location.getLocation().then((l) {
       myLat = l.latitude;
       myLng = l.longitude;
       getAddress(l.latitude, l.longitude);

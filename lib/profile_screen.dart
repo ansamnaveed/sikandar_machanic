@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mechanic/login_screen.dart';
 import 'package:mechanic/widgets/AppButton/AppButton.dart';
 import 'package:mechanic/widgets/AppDialog/app_dialog.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
@@ -107,9 +108,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () {
                 Get.dialog(
                   AppDialog(
-                    onTapOk: () {
-                      final _auth = FirebaseAuth.instance;
-                      _auth.signOut();
+                    onTapOk: () async {
+                      await FirebaseAuth.instance.signOut().then(
+                            (value) => Get.offAll(
+                              LoginScreen(),
+                            ),
+                          );
                     },
                     title: 'Logout?',
                     subtitle: 'Are you sure to logout the app.',
