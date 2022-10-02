@@ -102,23 +102,16 @@ class _SPDetailsState extends State<SPDetails> {
           } else {
             print(result.errorMessage);
           }
-
-          addPolyLine(polylineCoordinates);
-          // _polyline.add(Polyline(
-          //   polylineId: PolylineId('Mechanic'),
-          //   visible: true,
-          //   points: <LatLng>[
-          //     LatLng(
-          //       value.latitude,
-          //       value.longitude,
-          //     ),
-          //     LatLng(
-          // double.parse(sp['lat']),
-          // double.parse(sp['long']),
-          //     ),
-          //   ],
-          //   color: Colors.blue,
-          // ));
+          if (_polyline.length == 0) {
+            addPolyLine(polylineCoordinates);
+          } else {
+            googleMapController.animateCamera(
+              CameraUpdate.newCameraPosition(
+                CameraPosition(
+                    target: LatLng(value.latitude, value.longitude), zoom: 15),
+              ),
+            );
+          }
         });
       },
     );
