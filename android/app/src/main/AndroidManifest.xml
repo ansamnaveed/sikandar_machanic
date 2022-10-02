@@ -1,9 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mechanic">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="mechanic"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyAXBoeUMq3cPeFteKpVMGG4yG9IKet_HEA"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
