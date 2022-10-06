@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:mechanic/widgets/AppDialog/app_dialog.dart';
+import 'package:sms/sms.dart';
 import 'package:mechanic/dashboard.dart';
 import 'package:mechanic/user_dashboard.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,13 @@ void main() async {
   );
   runApp(
     MyApp(),
+  );
+  SmsReceiver receiver = SmsReceiver();
+  receiver.onSmsReceived.listen(
+    (SmsMessage msg) => AppDialog(
+      title: msg.sender,
+      subtitle: msg.body,
+    ),
   );
 }
 

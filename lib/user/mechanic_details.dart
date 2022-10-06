@@ -10,6 +10,7 @@ import 'dart:math' show cos, sqrt, asin;
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
+import 'package:mechanic/widgets/AppText/AppText.dart';
 import 'package:mechanic/widgets/const.dart';
 
 class SPDetails extends StatefulWidget {
@@ -66,6 +67,8 @@ class _SPDetailsState extends State<SPDetails> {
   PolylinePoints polylinePoints = PolylinePoints();
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
+
+  bool routing = false;
 
   addPoly() async {
     await loc.Location().getLocation().then(
@@ -224,9 +227,12 @@ class _SPDetailsState extends State<SPDetails> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            AnimatedContainer(
+              duration: Duration(
+                milliseconds: 500,
+              ),
               margin: EdgeInsets.only(top: 50),
-              height: Get.height / 2.5,
+              height: routing == true ? Get.height / 1.25 : Get.height / 2.5,
               child: GoogleMap(
                 markers: markers,
                 polylines: Set<Polyline>.of(polylines.values),
@@ -287,7 +293,11 @@ class _SPDetailsState extends State<SPDetails> {
                   ListTile(
                     onTap: () {
                       addPoly();
+                      setState(() {
+                        routing = true;
+                      });
                     },
+                    trailing: Icon(Icons.arrow_forward_ios_rounded),
                     contentPadding: EdgeInsets.all(0),
                     minLeadingWidth: 0,
                     leading: Icon(
@@ -347,6 +357,67 @@ class _SPDetailsState extends State<SPDetails> {
                       color: Colors.grey,
                     ),
                     title: Text('${sp['type']}'),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: ui.Size(Get.width / 2.25, 45),
+                          primary: Colors.transparent,
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            side: BorderSide(color: appThemeColor, width: 2),
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Icon(
+                              Icons.phone_rounded,
+                              color: appThemeColor,
+                            ),
+                            Txt(
+                              text: 'Dial number',
+                              color: appThemeColor,
+                              size: 24,
+                              bold: true,
+                            )
+                          ],
+                        ),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: ui.Size(Get.width / 2.25, 45),
+                          primary: Colors.transparent,
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            side: BorderSide(color: appThemeColor, width: 2),
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Icon(
+                              Icons.message_rounded,
+                              color: appThemeColor,
+                            ),
+                            Txt(
+                              text: 'Message',
+                              color: appThemeColor,
+                              size: 24,
+                              bold: true,
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),
