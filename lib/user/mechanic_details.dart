@@ -279,19 +279,43 @@ class _SPDetailsState extends State<SPDetails> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  ListTile(
-                    trailing: Icon(Icons.arrow_forward_ios_rounded),
-                    contentPadding: EdgeInsets.all(0),
-                    minLeadingWidth: 0,
-                    leading: Icon(
-                      Icons.near_me_rounded,
+                  Theme(
+                    data: ThemeData(
+                      dividerColor: Colors.transparent,
                     ),
-                    title: Text(
-                      "${sp['phone']}",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                    child: ExpansionTile(
+                      tilePadding: EdgeInsets.all(0),
+                      childrenPadding: EdgeInsets.all(0),
+                      title: Text(
+                        "${sp['phone']}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
+                      children: [
+                        ListTile(
+                          minLeadingWidth: 0,
+                          minVerticalPadding: 0,
+                          dense: true,
+                          leading: Icon(Icons.message_rounded),
+                          title: Text('Message'),
+                        ),
+                        ListTile(
+                          minLeadingWidth: 0,
+                          minVerticalPadding: 0,
+                          dense: true,
+                          leading: Icon(Icons.message_rounded),
+                          title: Text('Call'),
+                        ),
+                        ListTile(
+                          minLeadingWidth: 0,
+                          minVerticalPadding: 0,
+                          dense: true,
+                          leading: Icon(Icons.message_rounded),
+                          title: Text('Direct Message'),
+                        )
+                      ],
                     ),
                   ),
                   Text(
@@ -393,67 +417,6 @@ class _SPDetailsState extends State<SPDetails> {
                     ),
                     title: Text('${sp['type']}'),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: ui.Size(Get.width / 2.25, 45),
-                          primary: Colors.transparent,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            side: BorderSide(color: appThemeColor, width: 2),
-                          ),
-                        ),
-                        onPressed: () {},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Icon(
-                              Icons.phone_rounded,
-                              color: appThemeColor,
-                            ),
-                            Txt(
-                              text: 'Dial number',
-                              color: appThemeColor,
-                              size: 24,
-                              bold: true,
-                            )
-                          ],
-                        ),
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: ui.Size(Get.width / 2.25, 45),
-                          primary: Colors.transparent,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            side: BorderSide(color: appThemeColor, width: 2),
-                          ),
-                        ),
-                        onPressed: () {},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Icon(
-                              Icons.message_rounded,
-                              color: appThemeColor,
-                            ),
-                            Txt(
-                              text: 'Message',
-                              color: appThemeColor,
-                              size: 24,
-                              bold: true,
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
                 ],
               ),
             ),
