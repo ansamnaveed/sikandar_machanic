@@ -2,13 +2,12 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mechanic/mechanic_details.dart';
 import 'package:mechanic/user_dashboard.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
 import 'package:mechanic/login_screen.dart';
-import 'package:mechanic/mechanic_details.dart';
 import 'package:mechanic/widgets/AppButton/AppButton.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
 import 'package:mechanic/widgets/TextFields/AppTextField.dart';
@@ -125,16 +124,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
                     ).hasMatch(emailController.text)
                         ? () async {
-                            // if (mechanic == true) {
-                            //   Get.to(
-                            //     MechanicDetails(
-                            //       name: nameController.text,
-                            //       email: emailController.text,
-                            //       phone: phoneController.text,
-                            //       password: passwordController.text,
-                            //     ),
-                            //   );
-                            // } else {
                             setState(() {
                               showSpinner = true;
                             });
@@ -160,52 +149,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 snackPosition: SnackPosition.BOTTOM,
                               );
                             } else {
-                              try {
-                                final newUser =
-                                    await _auth.createUserWithEmailAndPassword(
-                                  email: emailController.text,
-                                  password: passwordController.text,
+                              if (mechanic == true) {
+                                Get.to(
+                                  MechanicDetails(
+                                    name: nameController.text,
+                                    email: emailController.text,
+                                    phone: phoneController.text,
+                                    password: passwordController.text,
+                                  ),
                                 );
-                                User? user = _auth.currentUser;
-                                await FirebaseFirestore.instance
-                                    .collection("Users")
-                                    .doc(emailController.text)
-                                    .set(
-                                  {
-                                    'uid': user!.uid,
-                                    'firstname': nameController.text,
-                                    'email': emailController.text,
-                                    'phone': phoneController.text,
-                                    'password': passwordController.text,
-                                    'imageUrl': 'null',
-                                    'role': 'user',
-                                  },
-                                );
-                                if (newUser != null) {
-                                  Get.offAll(
-                                    UserDashboard(),
+                              } else {
+                                try {
+                                  final newUser = await _auth
+                                      .createUserWithEmailAndPassword(
+                                    email: emailController.text,
+                                    password: passwordController.text,
+                                  );
+                                  User? user = _auth.currentUser;
+                                  await FirebaseFirestore.instance
+                                      .collection("Users")
+                                      .doc(emailController.text)
+                                      .set(
+                                    {
+                                      'uid': user!.uid,
+                                      'firstname': nameController.text,
+                                      'email': emailController.text,
+                                      'phone': phoneController.text,
+                                      'password': passwordController.text,
+                                      'imageUrl': 'null',
+                                      'role': 'user',
+                                    },
+                                  );
+                                  if (newUser != null) {
+                                    Get.offAll(
+                                      UserDashboard(),
+                                    );
+                                  }
+                                } catch (e) {
+                                  Get.snackbar(
+                                    e
+                                        .toString()
+                                        .split('/')
+                                        .last
+                                        .split(']')
+                                        .first
+                                        .replaceAll('-', ' ')
+                                        .toUpperCase(),
+                                    e.toString().split('] ').last,
+                                    snackPosition: SnackPosition.BOTTOM,
                                   );
                                 }
-                              } catch (e) {
-                                Get.snackbar(
-                                  e
-                                      .toString()
-                                      .split('/')
-                                      .last
-                                      .split(']')
-                                      .first
-                                      .replaceAll('-', ' ')
-                                      .toUpperCase(),
-                                  e.toString().split('] ').last,
-                                  snackPosition: SnackPosition.BOTTOM,
-                                );
                               }
                             }
                             setState(() {
                               showSpinner = false;
                             });
                           }
-                        // }
                         : null,
                   ),
                   SizedBox(

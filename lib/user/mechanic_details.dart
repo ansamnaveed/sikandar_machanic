@@ -176,7 +176,13 @@ class _SPDetailsState extends State<SPDetails> {
         toolbarHeight: 70,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            if (routing == true) {
+              setState(() {
+                routing = false;
+              });
+            } else {
+              Navigator.pop(context);
+            }
           },
           icon: Icon(
             Icons.arrow_back_rounded,
@@ -225,6 +231,9 @@ class _SPDetailsState extends State<SPDetails> {
       ),
       extendBodyBehindAppBar: true,
       body: SingleChildScrollView(
+        physics: routing == true
+            ? NeverScrollableScrollPhysics()
+            : BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -278,7 +287,7 @@ class _SPDetailsState extends State<SPDetails> {
                       Icons.near_me_rounded,
                     ),
                     title: Text(
-                      "${sp['description']}",
+                      "${sp['phone']}",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
