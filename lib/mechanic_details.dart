@@ -8,7 +8,6 @@ import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:mechanic/dashboard.dart';
 import 'package:mechanic/login_screen.dart';
-import 'package:mechanic/user_dashboard.dart';
 import 'package:mechanic/widgets/AppButton/AppButton.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
 import 'package:mechanic/widgets/TextFields/AppTextField.dart';
@@ -193,6 +192,7 @@ class _MechanicDetailsState extends State<MechanicDetails> {
                             .set(
                           {
                             'uid': user!.uid,
+                            'phone': widget.phone,
                             'email': widget.email,
                             'password': widget.password,
                             'imageUrl': 'null',
@@ -211,7 +211,18 @@ class _MechanicDetailsState extends State<MechanicDetails> {
                           );
                         }
                       } catch (e) {
-                        print(e);
+                        Get.snackbar(
+                          e
+                              .toString()
+                              .split('/')
+                              .last
+                              .split(']')
+                              .first
+                              .replaceAll('-', ' ')
+                              .toUpperCase(),
+                          e.toString().split('] ').last,
+                          snackPosition: SnackPosition.BOTTOM,
+                        );
                       }
                       setState(() {
                         showSpinner = false;

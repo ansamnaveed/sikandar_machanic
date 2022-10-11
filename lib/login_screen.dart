@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
                     child: Text(
-                      'Login as Mechanic',
+                      'Login',
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
@@ -54,6 +54,35 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 10,
                   ),
                   AppTextField(
+                    enterFunc: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    changed: (value) {
+                      if (RegExp(
+                        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
+                      ).hasMatch(value)) {
+                        setState(() {
+                          loginFunction = emailController.text == '' ||
+                                  passwordController.text == ''
+                              ? null
+                              : () {
+                                  if (RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
+                                  ).hasMatch(emailController.text)) {
+                                    login(emailController.text,
+                                        passwordController.text);
+                                  } else {
+                                    Get.snackbar(
+                                        'Error', 'Email format is incorrect');
+                                  }
+                                };
+                        });
+                      } else {
+                        setState(() {
+                          loginFunction = null;
+                        });
+                      }
+                    },
                     controller: emailController,
                     email: true,
                   ),
@@ -71,34 +100,44 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 10,
                   ),
                   AppTextField(
+                    changed: (value) {
+                      if (value.length > 5) {
+                        setState(() {
+                          loginFunction = emailController.text == '' ||
+                                  passwordController.text == ''
+                              ? null
+                              : () {
+                                  if (RegExp(
+                                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
+                                  ).hasMatch(emailController.text)) {
+                                    login(emailController.text,
+                                        passwordController.text);
+                                  } else {
+                                    Get.snackbar(
+                                      'Error',
+                                      'Password must be at least 6 characters.',
+                                    );
+                                  }
+                                };
+                        });
+                      } else {
+                        setState(() {
+                          loginFunction = null;
+                        });
+                      }
+                    },
                     controller: passwordController,
                     password: true,
+                    enterFunc: () {
+                      FocusScope.of(context).unfocus();
+                    },
                   ),
                   SizedBox(
                     height: 50,
                   ),
                   AppBtn(
                     child: Text('Login'),
-                    onPressed: () async {
-                      setState(
-                        () {
-                          showSpinner = true;
-                        },
-                      );
-                      try {
-                        final user = await _auth.signInWithEmailAndPassword(
-                            email: emailController.text,
-                            password: passwordController.text);
-                        if (user != null) {
-                          checkExist(emailController.text);
-                        }
-                      } catch (e) {
-                        print(e);
-                      }
-                      setState(() {
-                        showSpinner = false;
-                      });
-                    },
+                    onPressed: loginFunction,
                   ),
                   SizedBox(
                     height: 20,
@@ -124,6 +163,41 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Function? loginFunction;
+
+  login(String email, String password) async {
+    setState(
+      () {
+        showSpinner = true;
+      },
+    );
+    try {
+      final user = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      if (user != null) {
+        checkExist(email);
+      }
+    } catch (e) {
+      Get.snackbar(
+        e
+            .toString()
+            .split('/')
+            .last
+            .split(']')
+            .first
+            .replaceAll('-', ' ')
+            .toUpperCase(),
+        e.toString().split('] ').last,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+    setState(
+      () {
+        showSpinner = false;
+      },
     );
   }
 

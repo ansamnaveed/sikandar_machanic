@@ -73,49 +73,48 @@ class _SPDetailsState extends State<SPDetails> {
   addPoly() async {
     await loc.Location().getLocation().then(
       (value) {
-        setState(() async {
-          markers.add(
-            Marker(
-              icon: current,
-              markerId: MarkerId("Location"),
-              position: LatLng(value.latitude, value.longitude),
-            ),
-          );
-          googleMapController.animateCamera(
-            CameraUpdate.newCameraPosition(
-              CameraPosition(
-                  target: LatLng(value.latitude, value.longitude), zoom: 15),
-            ),
-          );
-          PolylineResult result =
-              await polylinePoints.getRouteBetweenCoordinates(
-            'AIzaSyDKmLLFNfWuryZusNOe77ltmmJsJU7_XvI',
-            PointLatLng(value.latitude, value.longitude),
-            PointLatLng(
-              double.parse(sp['lat']),
-              double.parse(sp['long']),
-            ),
-            travelMode: TravelMode.driving,
-          );
-
-          if (result.points.isNotEmpty) {
-            result.points.forEach((PointLatLng point) {
-              polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+        setState(
+          () async {
+            setState(() {
+              polylineCoordinates = [];
             });
-          } else {
-            print(result.errorMessage);
-          }
-          if (_polyline.length == 0) {
-            addPolyLine(polylineCoordinates);
-          } else {
+            markers.add(
+              Marker(
+                icon: current,
+                markerId: MarkerId("Location"),
+                position: LatLng(value.latitude, value.longitude),
+              ),
+            );
             googleMapController.animateCamera(
               CameraUpdate.newCameraPosition(
                 CameraPosition(
                     target: LatLng(value.latitude, value.longitude), zoom: 15),
               ),
             );
-          }
-        });
+            PolylineResult result =
+                await polylinePoints.getRouteBetweenCoordinates(
+              'AIzaSyDKmLLFNfWuryZusNOe77ltmmJsJU7_XvI',
+              PointLatLng(value.latitude, value.longitude),
+              PointLatLng(
+                double.parse(sp['lat']),
+                double.parse(sp['long']),
+              ),
+              travelMode: TravelMode.driving,
+            );
+
+            if (result.points.isNotEmpty) {
+              result.points.forEach((PointLatLng point) {
+                polylineCoordinates
+                    .add(LatLng(point.latitude, point.longitude));
+              });
+            } else {
+              print(result.errorMessage);
+            }
+            if (routing == true) {
+              addPolyLine(polylineCoordinates);
+            }
+          },
+        );
       },
     );
   }
@@ -123,10 +122,12 @@ class _SPDetailsState extends State<SPDetails> {
   addPolyLine(List<LatLng> polylineCoordinates) {
     PolylineId id = PolylineId("poly");
     Polyline polyline = Polyline(
+      endCap: Cap.roundCap,
+      startCap: Cap.roundCap,
       polylineId: id,
       color: appThemeColor,
       points: polylineCoordinates,
-      width: 8,
+      width: 5,
     );
     polylines[id] = polyline;
     setState(() {});
@@ -262,6 +263,29 @@ class _SPDetailsState extends State<SPDetails> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
+                    'Contact:',
+                    style: TextStyle(
+                      color: appThemeColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  ListTile(
+                    trailing: Icon(Icons.arrow_forward_ios_rounded),
+                    contentPadding: EdgeInsets.all(0),
+                    minLeadingWidth: 0,
+                    leading: Icon(
+                      Icons.near_me_rounded,
+                    ),
+                    title: Text(
+                      "${sp['description']}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                  Text(
                     'Description:',
                     style: TextStyle(
                       color: appThemeColor,
@@ -292,7 +316,9 @@ class _SPDetailsState extends State<SPDetails> {
                   ),
                   ListTile(
                     onTap: () {
-                      addPoly();
+                      if (_polyline.isEmpty) {
+                        addPoly();
+                      }
                       setState(() {
                         routing = true;
                       });

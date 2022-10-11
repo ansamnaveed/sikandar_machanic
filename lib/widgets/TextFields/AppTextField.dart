@@ -18,6 +18,7 @@ class AppTextField extends StatelessWidget {
   bool email;
   bool phone;
   Function enterFunc;
+  Function(String) changed;
 
   AppTextField({
     Key key,
@@ -27,6 +28,7 @@ class AppTextField extends StatelessWidget {
     this.textType = TextInputType.text,
     this.password = false,
     this.radius = 50,
+    this.changed,
     this.lines = 1,
     this.errorValue = 'Please enter the correct value.',
     @required this.controller,
@@ -40,6 +42,7 @@ class AppTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onChanged: changed,
       maxLines: lines,
       textAlign: textAlign,
       autovalidateMode: AutovalidateMode.onUserInteraction,

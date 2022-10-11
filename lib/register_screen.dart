@@ -72,6 +72,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   AppTextField(
                     controller: emailController,
                     email: true,
+                    enterFunc: () {
+                      FocusScope.of(context).unfocus();
+                    },
                   ),
                   Align(
                     alignment: Alignment.topLeft,
@@ -118,61 +121,92 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   AppBtn(
                     child: Text(mechanic == true ? 'Next' : 'Register'),
-                    onPressed: () async {
-                      if (mechanic == true) {
-                        Get.to(
-                          MechanicDetails(
-                            name: nameController.text,
-                            email: emailController.text,
-                            phone: phoneController.text,
-                            password: passwordController.text,
-                          ),
-                        );
-                      } else {
-                        setState(() {
-                          showSpinner = true;
-                        });
-                        try {
-                          final newUser =
-                              await _auth.createUserWithEmailAndPassword(
-                            email: emailController.text,
-                            password: passwordController.text,
-                          );
-                          User? user = _auth.currentUser;
-                          await FirebaseFirestore.instance
-                              .collection("Users")
-                              .doc(emailController.text)
-                              .set(
-                            {
-                              'uid': user!.uid,
-                              'email': emailController.text,
-                              'password': passwordController.text,
-                              'imageUrl': 'null',
-                              'firstname': nameController.text,
-                              'role': 'user',
-                            },
-                          );
-                          // .whenComplete(
-                          //   () {
-                          //     GetStorage().write('UserUID', user);
-                          //     GetStorage().write('UserName', user);
-                          //     GetStorage().write('UserEmail', user);
-                          //     GetStorage().write('UserName', user);
-                          //   },
-                          // );
-                          if (newUser != null) {
-                            Get.offAll(
-                              UserDashboard(),
-                            );
+                    onPressed: RegExp(
+                      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
+                    ).hasMatch(emailController.text)
+                        ? () async {
+                            // if (mechanic == true) {
+                            //   Get.to(
+                            //     MechanicDetails(
+                            //       name: nameController.text,
+                            //       email: emailController.text,
+                            //       phone: phoneController.text,
+                            //       password: passwordController.text,
+                            //     ),
+                            //   );
+                            // } else {
+                            setState(() {
+                              showSpinner = true;
+                            });
+                            if (nameController.text == '') {
+                              Get.snackbar(
+                                'Error',
+                                'Please fill the name field',
+                                snackPosition: SnackPosition.BOTTOM,
+                              );
+                            } else if (RegExp(
+                                  r'(^([+0]9)[0-9]{10,12}$)',
+                                ).hasMatch(phoneController.text) ==
+                                false) {
+                              Get.snackbar(
+                                'Error',
+                                'Please fill the phone field correctly.\n+92xxxxxxxxxx',
+                                snackPosition: SnackPosition.BOTTOM,
+                              );
+                            } else if (passwordController.text == '') {
+                              Get.snackbar(
+                                'Error',
+                                'Please fill the password field',
+                                snackPosition: SnackPosition.BOTTOM,
+                              );
+                            } else {
+                              try {
+                                final newUser =
+                                    await _auth.createUserWithEmailAndPassword(
+                                  email: emailController.text,
+                                  password: passwordController.text,
+                                );
+                                User? user = _auth.currentUser;
+                                await FirebaseFirestore.instance
+                                    .collection("Users")
+                                    .doc(emailController.text)
+                                    .set(
+                                  {
+                                    'uid': user!.uid,
+                                    'firstname': nameController.text,
+                                    'email': emailController.text,
+                                    'phone': phoneController.text,
+                                    'password': passwordController.text,
+                                    'imageUrl': 'null',
+                                    'role': 'user',
+                                  },
+                                );
+                                if (newUser != null) {
+                                  Get.offAll(
+                                    UserDashboard(),
+                                  );
+                                }
+                              } catch (e) {
+                                Get.snackbar(
+                                  e
+                                      .toString()
+                                      .split('/')
+                                      .last
+                                      .split(']')
+                                      .first
+                                      .replaceAll('-', ' ')
+                                      .toUpperCase(),
+                                  e.toString().split('] ').last,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              }
+                            }
+                            setState(() {
+                              showSpinner = false;
+                            });
                           }
-                        } catch (e) {
-                          print(e);
-                        }
-                        setState(() {
-                          showSpinner = false;
-                        });
-                      }
-                    },
+                        // }
+                        : null,
                   ),
                   SizedBox(
                     height: 10,
