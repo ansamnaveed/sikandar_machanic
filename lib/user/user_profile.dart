@@ -9,6 +9,8 @@ import 'package:mechanic/widgets/AppDialog/app_dialog.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
+import 'profile_screens/change_password.dart';
+
 class UserProfileScreen extends StatefulWidget {
   ScrollController scrollcontroller = ScrollController();
   UserProfileScreen({Key? key, required this.scrollcontroller})
@@ -21,6 +23,7 @@ class UserProfileScreen extends StatefulWidget {
 class _UserProfileScreenState extends State<UserProfileScreen> {
   String? fullname;
   String? fileUrl;
+  String? phone;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -35,6 +38,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         .get();
     setState(() {
       fullname = variable['firstname'];
+      phone = variable['phone'];
       fileUrl = variable['imageUrl'];
     });
     setState(() {
@@ -81,13 +85,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 bold: true,
               ),
               Txt(
-                text: '+92 1234 567890',
+                text: phone.toString(),
                 size: 20,
               ),
               SizedBox(height: 20),
               Card(
                 elevation: 5,
                 child: ListTile(
+                  onTap: () {
+                    Get.to(
+                      ChangePassword(),
+                    );
+                  },
                   trailing: Icon(Icons.arrow_forward_ios_rounded),
                   leading: Icon(Icons.lock_rounded),
                   title: Txt(text: 'Change Password'),
@@ -121,7 +130,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     AppDialog(
                       onTapOk: () {
                         final _auth = FirebaseAuth.instance;
-                        _auth.signOut();
+                        _auth.signOut().whenComplete(
+                              () => Get.back(),
+                            );
                       },
                       title: 'Logout?',
                       subtitle: 'Are you sure to logout the app.',
