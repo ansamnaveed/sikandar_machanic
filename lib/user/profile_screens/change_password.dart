@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mechanic/login_screen.dart';
 import 'package:mechanic/widgets/AppButton/AppButton.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
 import 'package:mechanic/widgets/TextFields/AppTextField.dart';
@@ -70,32 +71,46 @@ class _ChangePasswordState extends State<ChangePassword> {
                   child: AppTextField(
                     password: true,
                     controller: currentController,
-                    // changed: (value) {
-                    //   if (value.length > 5) {
-                    //     setState(() {
-                    //       loginFunction = emailController.text == '' ||
-                    //               passwordController.text == ''
-                    //           ? null
-                    //           : () {
-                    //               if (RegExp(
-                    //                 r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
-                    //               ).hasMatch(emailController.text)) {
-                    //                 login(emailController.text,
-                    //                     passwordController.text);
-                    //               } else {
-                    //                 Get.snackbar(
-                    //                   'Error',
-                    //                   'Password must be at least 6 characters.',
-                    //                 );
-                    //               }
-                    //             };
-                    //     });
-                    //   } else {
-                    //     setState(() {
-                    //       loginFunction = null;
-                    //     });
-                    //   }
-                    // },
+                    changed: (value) {
+                      if (value.length > 5) {
+                        setState(
+                          () {
+                            passwordFunction = value == '' ||
+                                    newController.text == '' ||
+                                    confirmController.text == ''
+                                ? null
+                                : () {
+                                    if (RegExp(
+                                      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
+                                    ).hasMatch(newController.text)) {
+                                      if (newController.text ==
+                                          confirmController.text) {
+                                        changePassword(newController.text);
+                                      } else {
+                                        Get.snackbar(
+                                          'Error',
+                                          'New password and confirm password not match.',
+                                          snackPosition: SnackPosition.BOTTOM,
+                                        );
+                                      }
+                                    } else {
+                                      Get.snackbar(
+                                        'Error',
+                                        'Password must contain at least:\n8 characters.\n1 uppercase\n1 lowercase\n1 digit\n1 special character',
+                                        snackPosition: SnackPosition.BOTTOM,
+                                      );
+                                    }
+                                  };
+                          },
+                        );
+                      } else {
+                        setState(
+                          () {
+                            passwordFunction = null;
+                          },
+                        );
+                      }
+                    },
                     enterFunc: () {
                       FocusScope.of(context).unfocus();
                     },
@@ -110,6 +125,48 @@ class _ChangePasswordState extends State<ChangePassword> {
                   child: AppTextField(
                     password: true,
                     controller: newController,
+                    changed: (value) {
+                      if (value.length > 7) {
+                        setState(
+                          () {
+                            passwordFunction = confirmController.text == '' ||
+                                    value == '' ||
+                                    confirmController.text == ''
+                                ? null
+                                : () {
+                                    if (RegExp(
+                                      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
+                                    ).hasMatch(value)) {
+                                      if (value == confirmController.text) {
+                                        changePassword(value);
+                                      } else {
+                                        Get.snackbar(
+                                          'Error',
+                                          'New password and confirm password not match.',
+                                          snackPosition: SnackPosition.BOTTOM,
+                                        );
+                                      }
+                                    } else {
+                                      Get.snackbar(
+                                        'Error',
+                                        'Password must contain at least:\n8 characters.\n1 uppercase\n1 lowercase\n1 digit\n1 special character',
+                                        snackPosition: SnackPosition.BOTTOM,
+                                      );
+                                    }
+                                  };
+                          },
+                        );
+                      } else {
+                        setState(
+                          () {
+                            passwordFunction = null;
+                          },
+                        );
+                      }
+                    },
+                    enterFunc: () {
+                      FocusScope.of(context).unfocus();
+                    },
                   ),
                 ),
                 Txt(
@@ -121,6 +178,48 @@ class _ChangePasswordState extends State<ChangePassword> {
                   child: AppTextField(
                     password: true,
                     controller: confirmController,
+                    changed: (value) {
+                      if (value.length > 7) {
+                        setState(
+                          () {
+                            passwordFunction = currentController.text == '' ||
+                                    newController.text == '' ||
+                                    value == ''
+                                ? null
+                                : () {
+                                    if (RegExp(
+                                      r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$',
+                                    ).hasMatch(newController.text)) {
+                                      if (newController.text == value) {
+                                        changePassword(newController.text);
+                                      } else {
+                                        Get.snackbar(
+                                          'Error',
+                                          'New password and confirm password not match.',
+                                          snackPosition: SnackPosition.BOTTOM,
+                                        );
+                                      }
+                                    } else {
+                                      Get.snackbar(
+                                        'Error',
+                                        'Password must contain at least:\n8 characters.\n1 uppercase\n1 lowercase\n1 digit\n1 special character',
+                                        snackPosition: SnackPosition.BOTTOM,
+                                      );
+                                    }
+                                  };
+                          },
+                        );
+                      } else {
+                        setState(
+                          () {
+                            passwordFunction = null;
+                          },
+                        );
+                      }
+                    },
+                    enterFunc: () {
+                      FocusScope.of(context).unfocus();
+                    },
                   ),
                 ),
                 Container(
@@ -131,30 +230,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                       text: 'Change',
                       bold: true,
                     ),
-                    onPressed: currentController.text == '' ||
-                            newController.text == '' ||
-                            confirmController.text == ''
-                        ? null
-                        : () {
-                            if (currentController.text == password) {
-                              if (newController.text ==
-                                  confirmController.text) {
-                                changePassword(newController.text);
-                              } else {
-                                Get.snackbar(
-                                  'Error',
-                                  "New password and Confirm password not match.",
-                                  snackPosition: SnackPosition.BOTTOM,
-                                );
-                              }
-                            } else {
-                              Get.snackbar(
-                                'Error',
-                                "Please enter the correct password.",
-                                snackPosition: SnackPosition.BOTTOM,
-                              );
-                            }
-                          },
+                    onPressed: passwordFunction,
                   ),
                 )
               ],
@@ -164,6 +240,8 @@ class _ChangePasswordState extends State<ChangePassword> {
       ),
     );
   }
+
+  Function? passwordFunction;
 
   bool showSpinner = false;
   void getData() async {
@@ -186,41 +264,65 @@ class _ChangePasswordState extends State<ChangePassword> {
   String? password;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
-  void changePassword(String newPassword) async {
-    setState(() {
-      showSpinner = true;
-    });
-    final User? user = auth.currentUser;
-    auth.currentUser!.updatePassword(newPassword).then(
-      (_) async {
-        await FirebaseFirestore.instance
-            .collection('Users')
-            .doc(user!.email)
-            .update(
-          {
-            'password': newPassword,
-          },
-        ).whenComplete(() {
-          getData();
+  void changePassword(String newPassword) {
+    if (currentController.text == password) {
+      setState(() {
+        showSpinner = true;
+      });
+      final User? user = auth.currentUser;
+      auth.currentUser!.updatePassword(newPassword).then(
+        (_) async {
+          await FirebaseFirestore.instance
+              .collection('Users')
+              .doc(user!.email)
+              .update(
+            {
+              'password': newPassword,
+            },
+          ).whenComplete(
+            () {
+              getData();
+              setState(() {
+                showSpinner = false;
+                currentController.clear();
+                newController.clear();
+                confirmController.clear();
+              });
+              Get.snackbar(
+                'Success',
+                'Password changed successfully!!',
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            },
+          ).whenComplete(
+            () async {
+              await FirebaseAuth.instance.signOut().then(
+                    (value) => Get.offAll(
+                      LoginScreen(),
+                    ),
+                  );
+            },
+          );
+        },
+      ).catchError(
+        (error) {
           setState(() {
             showSpinner = false;
           });
           Get.snackbar(
-            'Success',
-            'Password changed successfully!!',
+            'Error',
+            error.toString(),
             snackPosition: SnackPosition.BOTTOM,
           );
-        });
-      },
-    ).catchError(
-      (error) {
-        Get.snackbar(
-          'Error',
-          error.toString(),
-          snackPosition: SnackPosition.BOTTOM,
-        );
-      },
-    );
+        },
+      );
+    } else {
+      Get.snackbar(
+        'Error',
+        "Old and new password dosen't match",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   TextEditingController currentController = TextEditingController();

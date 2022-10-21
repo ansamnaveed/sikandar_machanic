@@ -1,14 +1,19 @@
 // ignore_for_file: import_of_legacy_library_into_null_safe
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as storage;
+import 'package:mechanic/login_screen.dart';
 import 'package:mechanic/widgets/AppButton/AppButton.dart';
 import 'package:mechanic/widgets/AppDialog/app_dialog.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-
+import 'package:path/path.dart' as p;
 import 'profile_screens/change_password.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -22,16 +27,16 @@ class UserProfileScreen extends StatefulWidget {
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
   String? fullname;
-  String? fileUrl;
+  String fileUrl = "null";
   String? phone;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   void getData() async {
+    final User? user = auth.currentUser;
     setState(() {
       showSpinner = true;
     });
-    final User? user = auth.currentUser;
     DocumentSnapshot variable = await FirebaseFirestore.instance
         .collection("Users")
         .doc(user!.email)
@@ -54,6 +59,46 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   bool showSpinner = false;
 
+  File? profileImage;
+
+  pickFile() async {
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: false);
+    if (result != null) {
+      setState(() {
+        profileImage = File(result.files.first.path!);
+      });
+      uploadImage(profileImage);
+    } else {
+      return;
+    }
+  }
+
+  uploadImage(File? profile) async {
+    setState(() {
+      showSpinner = true;
+    });
+    final User? user = auth.currentUser;
+    final ref = storage.FirebaseStorage.instance.ref().child('images').child(
+        '${DateTime.now().toIso8601String() + p.basename(profile!.path)}');
+
+    final result = await ref.putFile(File(profile.path));
+    fileUrl = await result.ref.getDownloadURL();
+
+    await FirebaseFirestore.instance
+        .collection("Users")
+        .doc(user!.email)
+        .update(
+      {
+        "imageUrl": await result.ref.getDownloadURL(),
+      },
+    );
+    getData();
+    setState(() {
+      showSpinner = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,18 +110,30 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
-                padding: EdgeInsets.all(10),
-                height: Get.width / 4,
-                width: Get.width / 4,
-                clipBehavior: Clip.hardEdge,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Image(
-                  image: AssetImage('assets/images/user.png'),
-                  color: Colors.white,
+              GestureDetector(
+                onTap: () {
+                  pickFile();
+                },
+                child: Container(
+                  padding: fileUrl == "null"
+                      ? EdgeInsets.all(10)
+                      : EdgeInsets.all(0),
+                  height: Get.width / 4,
+                  width: Get.width / 4,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: fileUrl == "null"
+                      ? Image(
+                          image: AssetImage('assets/images/user.png'),
+                          color: Colors.white,
+                        )
+                      : Image(
+                          image: NetworkImage(fileUrl),
+                          fit: BoxFit.cover,
+                        ),
                 ),
               ),
               Txt(
@@ -128,10 +185,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 onPressed: () {
                   Get.dialog(
                     AppDialog(
-                      onTapOk: () {
-                        final _auth = FirebaseAuth.instance;
-                        _auth.signOut().whenComplete(
-                              () => Get.back(),
+                      onTapOk: () async {
+                        await FirebaseAuth.instance.signOut().then(
+                              (value) => Get.offAll(
+                                LoginScreen(),
+                              ),
                             );
                       },
                       title: 'Logout?',
