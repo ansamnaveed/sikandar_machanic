@@ -10,14 +10,14 @@ import 'package:mechanic/widgets/AppText/AppText.dart';
 import 'package:mechanic/widgets/TextFields/AppTextField.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
-class ChangePassword extends StatefulWidget {
-  ChangePassword({Key? key}) : super(key: key);
+class ChangePasswordM extends StatefulWidget {
+  ChangePasswordM({Key? key}) : super(key: key);
 
   @override
-  State<ChangePassword> createState() => _ChangePasswordState();
+  State<ChangePasswordM> createState() => _ChangePasswordMState();
 }
 
-class _ChangePasswordState extends State<ChangePassword> {
+class _ChangePasswordMState extends State<ChangePasswordM> {
   @override
   void initState() {
     getData();
@@ -26,8 +26,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-    Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         toolbarHeight: 70,
@@ -251,7 +250,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     });
     final User? user = auth.currentUser;
     DocumentSnapshot variable = await FirebaseFirestore.instance
-        .collection("Users")
+        .collection("Mechanics")
         .doc(user!.email)
         .get();
     setState(() {
@@ -274,7 +273,7 @@ class _ChangePasswordState extends State<ChangePassword> {
       auth.currentUser!.updatePassword(newPassword).then(
         (_) async {
           await FirebaseFirestore.instance
-              .collection('Users')
+              .collection('Mechanics')
               .doc(user!.email)
               .update(
             {

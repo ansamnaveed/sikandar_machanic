@@ -9,24 +9,24 @@ import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:mechanic/login_screen.dart';
-import 'package:mechanic/user/profile_screens/edit_profile_user.dart';
+import 'package:mechanic/mechanic/profile_screens_m/change_password_m.dart';
+import 'package:mechanic/mechanic/profile_screens_m/edit_profile_m.dart';
 import 'package:mechanic/widgets/AppButton/AppButton.dart';
 import 'package:mechanic/widgets/AppDialog/app_dialog.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:path/path.dart' as p;
-import 'profile_screens/change_password.dart';
 
-class UserProfileScreen extends StatefulWidget {
+class MechanicsProfileScreen extends StatefulWidget {
   ScrollController scrollcontroller = ScrollController();
-  UserProfileScreen({Key? key, required this.scrollcontroller})
+  MechanicsProfileScreen({Key? key, required this.scrollcontroller})
       : super(key: key);
 
   @override
-  State<UserProfileScreen> createState() => _UserProfileScreenState();
+  State<MechanicsProfileScreen> createState() => _MechanicsProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
+class _MechanicsProfileScreenState extends State<MechanicsProfileScreen> {
   String? fullname;
   String fileUrl = "null";
   String? phone;
@@ -39,7 +39,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       showSpinner = true;
     });
     DocumentSnapshot variable = await FirebaseFirestore.instance
-        .collection("Users")
+        .collection("Mechanics")
         .doc(user!.email)
         .get();
     setState(() {
@@ -87,7 +87,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     fileUrl = await result.ref.getDownloadURL();
 
     await FirebaseFirestore.instance
-        .collection("Users")
+        .collection("Mechanics")
         .doc(user!.email)
         .update(
       {
@@ -152,7 +152,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 child: ListTile(
                   onTap: () {
                     Get.to(
-                      ChangePassword(),
+                      ChangePasswordM(),
                     );
                   },
                   trailing: Icon(Icons.arrow_forward_ios_rounded),
@@ -164,7 +164,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 elevation: 5,
                 child: ListTile(
                   onTap: (() => Get.to(
-                        () => EditProfileUser(),
+                        () => EditProfileM(),
                       )),
                   trailing: Icon(Icons.arrow_forward_ios_rounded),
                   leading: Icon(Icons.edit_rounded),

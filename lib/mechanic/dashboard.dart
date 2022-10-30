@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mechanic/home.dart';
-import 'package:mechanic/profile_screen.dart';
+import 'package:mechanic/mechanic/profile_screenM.dart';
 import 'package:mechanic/reviews_screen.dart';
 import 'package:mechanic/widgets/const.dart';
 import 'package:mechanic/wallet_screen.dart';
@@ -74,7 +74,7 @@ class _DashboardState extends State<Dashboard>
               ReviewsScreen(
                 scrollcontroller: scrollcontroller,
               ),
-              ProfileScreen(
+              MechanicsProfileScreen(
                 scrollcontroller: scrollcontroller,
               ),
             ],

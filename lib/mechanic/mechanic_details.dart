@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart' as loc;
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
-import 'package:mechanic/dashboard.dart';
+import 'package:mechanic/mechanic/dashboard.dart';
 import 'package:mechanic/login_screen.dart';
 import 'package:mechanic/widgets/AppButton/AppButton.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
