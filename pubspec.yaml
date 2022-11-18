@@ -49,6 +49,7 @@ dependencies:
   sms: ^0.2.4
   firebase_storage: ^10.3.11
   file_picker: ^5.2.1
+  flutter_phone_direct_caller: ^2.1.1
 
 dev_dependencies:
   flutter_test:

@@ -1,17 +1,22 @@
 // @dart=2.9
-import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'dart:math' show cos, sqrt, asin;
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
-import 'package:mechanic/widgets/AppText/AppText.dart';
+import 'package:mechanic/widgets/AppButton/AppButton.dart';
+import 'package:mechanic/widgets/TextFields/AppTextField.dart';
 import 'package:mechanic/widgets/const.dart';
+import 'package:sms/sms.dart';
 
 class SPDetails extends StatefulWidget {
   Map sp;
@@ -295,24 +300,86 @@ class _SPDetailsState extends State<SPDetails> {
                       ),
                       children: [
                         ListTile(
+                          onTap: () {
+                            Get.dialog(
+                              Dialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                backgroundColor: Colors.white,
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        "Send an sms to the given phone number.",
+                                      ),
+                                      Text(
+                                        "(SMS charges may apply.)",
+                                        style: TextStyle(
+                                          fontSize: 9,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        child: AppTextField(
+                                          controller: commentController,
+                                        ),
+                                      ),
+                                      Center(
+                                        child: AppBtn(
+                                          child: Text("Send"),
+                                          onPressed: () async {
+                                            SimCardsProvider provider =
+                                                SimCardsProvider();
+                                            List<SimCard> sims =
+                                                await provider.getSimCards();
+                                            SmsSender sender = SmsSender();
+                                            sender.sendSms(
+                                              SmsMessage(sp["phone"],
+                                                  commentController.text),
+                                              simCard: sims[0],
+                                            );
+                                          },
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                           minLeadingWidth: 0,
                           minVerticalPadding: 0,
                           dense: true,
                           leading: Icon(Icons.message_rounded),
-                          title: Text('Message'),
+                          title: Text('Sms'),
                         ),
                         ListTile(
+                          onTap: () async {
+                            await FlutterPhoneDirectCaller.callNumber(
+                                sp["phone"]);
+                          },
                           minLeadingWidth: 0,
                           minVerticalPadding: 0,
                           dense: true,
-                          leading: Icon(Icons.message_rounded),
+                          leading: Icon(Icons.call),
                           title: Text('Call'),
                         ),
                         ListTile(
+                          onTap: () {},
                           minLeadingWidth: 0,
                           minVerticalPadding: 0,
                           dense: true,
-                          leading: Icon(Icons.message_rounded),
+                          leading: Icon(Icons.message_outlined),
                           title: Text('Direct Message'),
                         )
                       ],
@@ -417,6 +484,188 @@ class _SPDetailsState extends State<SPDetails> {
                     ),
                     title: Text('${sp['type']}'),
                   ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      AppBtn(
+                        child: Text(
+                          "Done",
+                        ),
+                        onPressed: () {
+                          Get.dialog(
+                            Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              backgroundColor: Colors.white,
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "Enter the amount decided by mechanic.",
+                                    ),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: AppTextField(
+                                        controller: amountController,
+                                      ),
+                                    ),
+                                    Center(
+                                      child: AppBtn(
+                                        child: Text("Pay"),
+                                        onPressed: () async {
+                                          final FirebaseAuth auth =
+                                              FirebaseAuth.instance;
+                                          final User user = auth.currentUser;
+                                          await FirebaseFirestore.instance
+                                              .collection("Users")
+                                              .doc(user.email)
+                                              .get()
+                                              .then(
+                                            (value) async {
+                                              FirebaseFirestore.instance
+                                                  .collection("Mechanics")
+                                                  .doc(sp['email'])
+                                                  .collection("Wallet")
+                                                  .doc(value["email"])
+                                                  .set(
+                                                {
+                                                  "Paid by": value.data(),
+                                                  "date":
+                                                      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
+                                                  "time":
+                                                      "${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}}",
+                                                  "Recieved by":
+                                                      sp["firstname"],
+                                                  "amount":
+                                                      amountController.text,
+                                                },
+                                              );
+                                              Get.back();
+                                              Get.snackbar(
+                                                "Success",
+                                                "Ammount added to the mechanic's wallet.",
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      AppBtn(
+                        child: Text(
+                          "Rate Mechanic",
+                        ),
+                        onPressed: () {
+                          Get.dialog(
+                            Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              backgroundColor: Colors.white,
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "Review and rate the mechanic.",
+                                    ),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: AppTextField(
+                                        controller: commentController,
+                                      ),
+                                    ),
+                                    Center(
+                                      child: RatingBar.builder(
+                                        glow: false,
+                                        initialRating: 3,
+                                        minRating: 1,
+                                        direction: Axis.horizontal,
+                                        allowHalfRating: true,
+                                        itemCount: 5,
+                                        itemPadding: EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        itemBuilder: (context, _) => Icon(
+                                          Icons.star,
+                                          color: Colors.amber,
+                                        ),
+                                        onRatingUpdate: (rating) {
+                                          setState(
+                                            () {
+                                              finalRating = rating;
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Center(
+                                      child: AppBtn(
+                                        child: Text("Send"),
+                                        onPressed: () async {
+                                          final FirebaseAuth auth =
+                                              FirebaseAuth.instance;
+                                          final User user = auth.currentUser;
+                                          await FirebaseFirestore.instance
+                                              .collection("Users")
+                                              .doc(user.email)
+                                              .get()
+                                              .then(
+                                            (value) async {
+                                              FirebaseFirestore.instance
+                                                  .collection("Mechanics")
+                                                  .doc(sp['email'])
+                                                  .collection("FeedBack")
+                                                  .doc(value["email"])
+                                                  .set(
+                                                {
+                                                  "from": value.data(),
+                                                  "feedback":
+                                                      commentController.text,
+                                                  "rating": finalRating
+                                                },
+                                              );
+                                              Get.back();
+                                              Get.snackbar("Success",
+                                                  "Feedback sent to Mechanc.");
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -425,4 +674,9 @@ class _SPDetailsState extends State<SPDetails> {
       ),
     );
   }
+
+  double finalRating = 0.0;
+
+  TextEditingController amountController = TextEditingController();
+  TextEditingController commentController = TextEditingController();
 }

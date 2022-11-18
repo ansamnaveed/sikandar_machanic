@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:mechanic/home.dart';
+import 'package:mechanic/mechanic/chat_users.dart';
 import 'package:mechanic/mechanic/profile_screenM.dart';
 import 'package:mechanic/reviews_screen.dart';
 import 'package:mechanic/widgets/const.dart';
@@ -19,7 +20,7 @@ class _DashboardState extends State<Dashboard>
   ScrollController scrollcontroller = ScrollController();
   @override
   void initState() {
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
     _tabController.addListener(_handleTabSelection);
     scrollcontroller = ScrollController()..addListener(_scrollListener);
     super.initState();
@@ -74,6 +75,7 @@ class _DashboardState extends State<Dashboard>
               ReviewsScreen(
                 scrollcontroller: scrollcontroller,
               ),
+              ChatUsers(),
               MechanicsProfileScreen(
                 scrollcontroller: scrollcontroller,
               ),
@@ -137,12 +139,21 @@ class _DashboardState extends State<Dashboard>
                     ),
                   ),
                   Tab(
+                    icon: Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      size: 24,
+                      color: _tabController.index == 3
+                          ? appThemeColor
+                          : Colors.black,
+                    ),
+                  ),
+                  Tab(
                     icon: Image(
                       image: AssetImage(
                         'assets/images/user.png',
                       ),
                       width: 20,
-                      color: _tabController.index == 3
+                      color: _tabController.index == 4
                           ? appThemeColor
                           : Colors.black,
                     ),

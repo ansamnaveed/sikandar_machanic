@@ -1,5 +1,7 @@
 // ignore_for_file: import_of_legacy_library_into_null_safe
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
@@ -52,7 +54,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                     RatingBar(
                       ignoreGestures: true,
                       glow: false,
-                      initialRating: 3.5,
+                      initialRating: sum,
                       direction: Axis.horizontal,
                       allowHalfRating: true,
                       itemCount: 5,
@@ -66,7 +68,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                       },
                     ),
                     Txt(
-                      text: '3.5',
+                      text: sum.toString(),
                       size: 24,
                       bold: true,
                     )
@@ -106,16 +108,16 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                     ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: 10,
+                      itemCount: mechanics.length,
                       itemBuilder: (context, i) {
                         return ListTile(
-                          title: Txt(text: 'Customer Name'),
-                          subtitle: Txt(text: 'Comment or Review'),
+                          title: Txt(text: mechanics[i]["from"]["firstname"]),
+                          subtitle: Txt(text: mechanics[i]["feedback"]),
                           trailing: RatingBar(
                             itemSize: 14,
                             ignoreGestures: true,
                             glow: false,
-                            initialRating: 3.5,
+                            initialRating: mechanics[i]["rating"],
                             direction: Axis.horizontal,
                             allowHalfRating: true,
                             itemCount: 5,
@@ -128,7 +130,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                               print(rating);
                             },
                           ),
-                          leading: CircleAvatar(),
+                          leading: CircleAvatar(
+                            backgroundImage:
+                                NetworkImage(mechanics[i]["from"]["imageUrl"]),
+                          ),
                         );
                       },
                     )
@@ -141,4 +146,53 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
       ),
     );
   }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  List mechanics = [];
+  List<double> wallet = [];
+
+  Future<void> getData() async {
+    CollectionReference _collectionRef = FirebaseFirestore.instance
+        .collection('Mechanics')
+        .doc(auth.currentUser!.email)
+        .collection("FeedBack");
+    final User? user = auth.currentUser;
+    QuerySnapshot querySnapshot = await _collectionRef.get();
+    setState(
+      () {
+        mechanics = querySnapshot.docs
+            .map(
+              (doc) => doc.data(),
+            )
+            .toList();
+      },
+    );
+    setState(
+      () {
+        for (var i = 0; i < mechanics.length; i++) {
+          wallet.add(
+            mechanics[i]['rating'],
+          );
+        }
+      },
+    );
+    if (wallet.length == 1) {
+      setState(() {
+        sum = wallet[0];
+      });
+    } else {
+      setState(() {
+        sum = wallet.reduce((a, b) => (a + b) / 2);
+      });
+    }
+  }
+
+  double sum = 0.0;
 }

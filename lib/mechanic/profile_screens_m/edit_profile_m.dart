@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mechanic/login_screen.dart';
 import 'package:mechanic/widgets/AppButton/AppButton.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
 import 'package:mechanic/widgets/TextFields/AppTextField.dart';
@@ -139,8 +138,8 @@ class _EditProfileMState extends State<EditProfileM> {
         .doc(user!.email)
         .update(
       {
-        'phone': fname,
-        'firstname': phone,
+        'phone': phone,
+        'firstname': fname,
       },
     ).whenComplete(
       () {

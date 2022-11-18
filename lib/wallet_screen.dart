@@ -1,5 +1,7 @@
 // ignore_for_file: import_of_legacy_library_into_null_safe
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mechanic/widgets/AppText/AppText.dart';
 import 'package:mechanic/widgets/const.dart';
@@ -53,7 +55,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       width: 36,
                     ),
                     Txt(
-                      text: '\$ 20',
+                      text: 'Rs. $sum',
                       size: 24,
                       bold: true,
                     )
@@ -93,13 +95,20 @@ class _WalletScreenState extends State<WalletScreen> {
                     ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: 10,
+                      itemCount: mechanics.length,
                       itemBuilder: (context, i) {
                         return ListTile(
-                          title: Txt(text: 'Customer Name'),
-                          subtitle: Txt(text: 'Address'),
-                          trailing: Txt(text: '\$ 20'),
-                          leading: CircleAvatar(),
+                          title: Txt(
+                            text: mechanics[i]["Paid by"]["firstname"],
+                          ),
+                          subtitle: Txt(
+                              text:
+                                  '${mechanics[i]["date"]} ${mechanics[i]["time"]}'),
+                          trailing: Txt(text: 'Rs. ${mechanics[i]["amount"]}'),
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                                mechanics[i]["Paid by"]["imageUrl"]),
+                          ),
                         );
                       },
                     )
@@ -112,4 +121,55 @@ class _WalletScreenState extends State<WalletScreen> {
       ),
     );
   }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  List mechanics = [];
+  List<int> wallet = [];
+
+  Future<void> getData() async {
+    CollectionReference _collectionRef = FirebaseFirestore.instance
+        .collection('Mechanics')
+        .doc(auth.currentUser!.email)
+        .collection("Wallet");
+    final User? user = auth.currentUser;
+    QuerySnapshot querySnapshot = await _collectionRef.get();
+    setState(
+      () {
+        mechanics = querySnapshot.docs
+            .map(
+              (doc) => doc.data(),
+            )
+            .toList();
+      },
+    );
+    setState(
+      () {
+        for (var i = 0; i < mechanics.length; i++) {
+          wallet.add(
+            int.parse(
+              mechanics[i]['amount'],
+            ),
+          );
+        }
+      },
+    );
+    if (wallet.length == 1) {
+      setState(() {
+        sum = wallet[0];
+      });
+    } else {
+      setState(() {
+        sum = wallet.reduce((a, b) => a + b);
+      });
+    }
+  }
+
+  int sum = 0;
 }

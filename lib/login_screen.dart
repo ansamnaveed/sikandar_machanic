@@ -222,7 +222,8 @@ class _LoginScreenState extends State<LoginScreen> {
               UserDashboard(),
             );
           } else if (doc.exists == false) {
-            await FirebaseFirestore.instance
+            await 
+            FirebaseFirestore.instance
                 .collection('Mechanics')
                 .doc(email)
                 .get()
