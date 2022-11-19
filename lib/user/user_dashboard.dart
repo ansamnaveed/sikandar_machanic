@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:mechanic/reviews_screen.dart';
 import 'package:mechanic/user/chat_screen.dart';
 import 'package:mechanic/user/user_home.dart';
 import 'package:mechanic/user/user_profile.dart';
@@ -19,7 +18,7 @@ class _UserDashboardState extends State<UserDashboard>
   ScrollController scrollcontroller = ScrollController();
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
     scrollcontroller = ScrollController()..addListener(_scrollListener);
     super.initState();
@@ -68,9 +67,6 @@ class _UserDashboardState extends State<UserDashboard>
               UserHomeScreen(
                 scrollcontroller: scrollcontroller,
               ),
-              ChatScreen(
-                scrollcontroller: scrollcontroller,
-              ),
               UserProfileScreen(
                 scrollcontroller: scrollcontroller,
               ),
@@ -107,17 +103,6 @@ class _UserDashboardState extends State<UserDashboard>
                       ),
                       width: 20,
                       color: _tabController.index == 0
-                          ? appThemeColor
-                          : Colors.black,
-                    ),
-                  ),
-                  Tab(
-                    icon: Image(
-                      image: AssetImage(
-                        'assets/images/reviews.png',
-                      ),
-                      width: 20,
-                      color: _tabController.index == 1
                           ? appThemeColor
                           : Colors.black,
                     ),

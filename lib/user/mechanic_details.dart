@@ -13,6 +13,7 @@ import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
+import 'package:mechanic/user/chat_screen.dart';
 import 'package:mechanic/widgets/AppButton/AppButton.dart';
 import 'package:mechanic/widgets/TextFields/AppTextField.dart';
 import 'package:mechanic/widgets/const.dart';
@@ -375,7 +376,13 @@ class _SPDetailsState extends State<SPDetails> {
                           title: Text('Call'),
                         ),
                         ListTile(
-                          onTap: () {},
+                          onTap: () {
+                            Get.to(
+                              ChatScreenUser(
+                                data: sp,
+                              ),
+                            );
+                          },
                           minLeadingWidth: 0,
                           minVerticalPadding: 0,
                           dense: true,
@@ -542,7 +549,7 @@ class _SPDetailsState extends State<SPDetails> {
                                                   "date":
                                                       "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
                                                   "time":
-                                                      "${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}}",
+                                                      "${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}",
                                                   "Recieved by":
                                                       sp["firstname"],
                                                   "amount":
